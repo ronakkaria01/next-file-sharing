@@ -7,17 +7,13 @@ on:
       - completed
 
 jobs:
-  deploy:
+  build:
     runs-on: self-hosted
 
     steps:
     - name: Pull Docker image
-      run: docker pull next-file-sharing-ci
-
-    - name: Delete Old Docker container
-      run: |
-        docker rm -f cicd-pipeline-container || true
-
-    - name: Run Docker container
-      run: |
-        docker run -d -p 8080:8080 --name cicd-pipeline-container next-file-sharing-ci
+      run: sudo docker pull ronakkaria01/next-file-sharing-cicd:latest
+    - name: Delete Old docker container
+      run: sudo docker rm -f next-file-sharing-cicd-pipeline-container || true
+    - name: Run Docker Container
+      run: sudo docker run -d -p 8080:8080 --name next-file-sharing-cicd-pipeline-container ronakkaria01/next-file-sharing-cicd
