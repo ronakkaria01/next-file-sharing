@@ -45,6 +45,8 @@ COPY . .
 # Run the build script.
 RUN yarn run build
 
+RUN ls
+
 ################################################################################
 # Create a new stage to run the application with minimal runtime dependencies
 # where the necessary files are copied from the build stage.
