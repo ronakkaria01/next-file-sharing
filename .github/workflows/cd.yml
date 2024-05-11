@@ -1,0 +1,23 @@
+name: CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+    - name: Pull Docker image
+      run: docker pull next-file-sharing-ci
+
+    - name: Delete Old Docker container
+      run: |
+        docker rm -f cicd-pipeline-container || true
+
+    - name: Run Docker container
+      run: |
+        docker run -d -p 8080:8080 --name cicd-pipeline-container next-file-sharing-ci
