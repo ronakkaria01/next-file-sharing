@@ -1,8 +1,7 @@
 "use client"
 
 import { io } from "socket.io-client"
-
-const socket = io(`http://localhost:${process.env.NEXT_PUBLIC_PORT}`)
+const socket = io(process.env.NEXT_PUBLIC_SITE_URL)
 
 const connectPromise = new Promise((resolve, reject) => {
     socket.on('connect', () => {

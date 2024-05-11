@@ -16,6 +16,7 @@ jobs:
       run: |
         echo "PORT=${{ secrets.PORT }}" >> .env
         echo "NEXT_PUBLIC_PORT=${{ secrets.NEXT_PUBLIC_PORT }}" >> .env
+        echo "NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }}" >> .env
     - name: Login Dockerhub
       env:
             DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
