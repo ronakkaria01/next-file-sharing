@@ -13,7 +13,7 @@ ARG NODE_VERSION=20.9.0
 FROM node:${NODE_VERSION}-alpine as base
 
 # Set working directory for all build stages.
-WORKDIR /usr/src/app
+WORKDIR /app
 
 
 ################################################################################
@@ -56,7 +56,7 @@ FROM base as final
 ENV NODE_ENV production
 
 # Change ownership and permissions for the application directory
-RUN chown -R node:node /usr/src/app && chmod -R 755 /usr/src/app
+RUN chown -R node:node /app && chmod -R 755 /app
 
 # Run the application as a non-root user.
 USER node
@@ -66,8 +66,8 @@ COPY package.json .
 
 # Copy the production dependencies from the deps stage and also
 # the built application from the build stage into the image.
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app// .//
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app// .//
 
 
 # Expose the port that the application listens on.
