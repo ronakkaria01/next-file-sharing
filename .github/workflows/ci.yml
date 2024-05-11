@@ -28,6 +28,7 @@ jobs:
 
   deploy:
     runs-on: self-hosted
+    needs: build
     steps:
     - name: Pull Docker image
       run: sudo docker pull ronakkaria01/next-file-sharing-cicd:latest
