@@ -1,16 +1,33 @@
 name: CI Pipeline
 
 on:
-  push:
-    branches: [ "main" ]
-  
-  workflow_dispatch:
+    push:
+        branches: [ "main" ]
+
+    workflow_dispatch:
 
 jobs:
+
     build:
+
         runs-on: ubuntu-latest
-        
+
         steps:
-        - uses: actions/checkout@v4
+        - uses: actions/checkout@v3
+
+        - name: Configure Docker
+          run: |
+            mkdir -p ~/.docker
+            touch ~/.docker/config.json
+            echo '{"credsStore": "secretservice"}' > ~/.docker/config.json
+
+        - name: Login Dockerhub
+          env:
+            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+            DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          run: docker login
+        
         - name: Build the Docker image
-          run: docker build . --file Dockerfile --tag next-file-sharing-ci
+          run: docker build . --file Dockerfile -t ronakkaria01/next-file-sharing-cicd
+        - name: Push to Dockerhub
+          run: docker push ronakkaria01/next-file-sharing-cicd:latest
