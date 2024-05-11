@@ -1,6 +1,5 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import SocketConnect from "@/components/socket.io/socketConnect";
 import { Body } from "@/components/body";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -13,7 +12,6 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <>
-      <SocketConnect />
       <html lang="en">
         <body suppressHydrationWarning={true} className={inter.className}>
           <Body>
