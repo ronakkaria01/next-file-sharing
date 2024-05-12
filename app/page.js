@@ -1,10 +1,10 @@
-// import LoginForm from "@/components/loginForm"
-import SendFile from "@/components/sendFile"
+import Main from "@/components/Main";
+import { UsernameProvider } from "@/context/UsernameContext";
 
 export default function Home() {
   return (
-    <main>
-      <SendFile />
-    </main>
+    <UsernameProvider>
+      <Main />
+    </UsernameProvider>
   )
 }

@@ -1,3 +1,5 @@
+const { addUser, getUsers, removeUserBySocketId } = require('../utils/helpers')
+
 function handler(io) {
     io.on('connection', (socket) => {
         console.log('A user connected')
@@ -18,12 +20,27 @@ function handler(io) {
             io.to(targetSocketId).emit('iceCandidate', candidate)
         })
 
-        socket.on('disconnect', () => {
+        socket.on('disconnect', async (e) => {
             console.log('User disconnected')
+
+            await removeUserBySocketId(socket.id)
+            socket.emit('users', getUsers())
         })
 
         socket.on('customEvent', (data) => {
             console.log('Custom event received with data:', data)
+        })
+
+        socket.on('add-username', async (username) => {
+            const add = {
+                username: username,
+                socketId: socket.id
+            }
+            await addUser(add)
+        })
+
+        socket.on('get-users', () => {
+            socket.emit('users', getUsers())
         })
     })
 }

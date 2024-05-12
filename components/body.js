@@ -1,8 +1,7 @@
 "use client"
+import { SocketConnect } from "./socket.io/socketConnect"
 
-const { default: SocketConnect } = require("./socket.io/socketConnect")
-
-const Body = ({ children }) => {
+export const Body = ({ children }) => {
     const connected = SocketConnect()
     return (
         <>
@@ -10,5 +9,3 @@ const Body = ({ children }) => {
         </>
     )
 }
-
-module.exports = { Body }

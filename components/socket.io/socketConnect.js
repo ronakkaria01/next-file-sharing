@@ -1,14 +1,14 @@
 "use client"
 import { useEffect, useState } from "react"
-import { socket, connectPromise } from "./connection"
+import { connectPromise } from "./connection"
 
-const SocketConnect = () => {
+export const SocketConnect = () => {
     const [socketConnected, setSocketConnected] = useState(false)
+    
     useEffect(() => {
         async function initialize() {
             try {
                 await connectPromise
-                console.log('Socket is connected:', socket.id)
                 setSocketConnected(true)
             } catch (error) {
                 console.error('Error connecting to socket:', error)
@@ -26,5 +26,3 @@ const SocketConnect = () => {
 
     return socketConnected
 }
-
-export default SocketConnect
