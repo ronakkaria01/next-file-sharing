@@ -20,10 +20,10 @@ jobs:
         echo "NEXT_PUBLIC_DOCKER_IP=${{ secrets.NEXT_PUBLIC_DOCKER_IP }}" >> .env
     - name: List Files
       run: ls -la
-    - name: Build and run with docker compose
-      run: docker-compose up -d
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile -t ronakkaria01/next-file-sharing-cicd
     - name: Check docker compose
-      run: docker ps
+      run: sudo docker ps
 
   deploy:
     runs-on: self-hosted
