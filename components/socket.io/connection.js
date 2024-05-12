@@ -9,7 +9,12 @@ const connectPromise = new Promise((resolve, reject) => {
     })
 
     socket.on('connect_error', (error) => {
-        reject(error); // Handle connection errors
+        console.log(error)
+        reject(error)
+    })
+
+    socket.on('error', (error) => {
+        console.error('Socket error:', error)
     })
 })
 

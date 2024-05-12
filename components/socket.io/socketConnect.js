@@ -7,11 +7,9 @@ const SocketConnect = () => {
     useEffect(() => {
         async function initialize() {
             try {
-                // Wait until the socket is connected
                 await connectPromise
                 console.log('Socket is connected:', socket.id)
                 setSocketConnected(true)
-                // Now you can use the socket
             } catch (error) {
                 console.error('Error connecting to socket:', error)
                 setSocketConnected(false)
