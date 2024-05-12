@@ -3,7 +3,8 @@
 import { io } from "socket.io-client"
 const socket = io(process.env.NEXT_PUBLIC_SITE_URL, {
     transports: ['websocket'],
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
+    withCredentials: true,
 })
 
 const connectPromise = new Promise((resolve, reject) => {

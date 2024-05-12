@@ -8,16 +8,14 @@ const port = process.env.PORT || 3000
 
 app.prepare().then(() => {
     const server = http.createServer((req, res) => {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', 'GET,POST');
+        res.setHeader('Access-Control-Allow-Origin', process.env.NEXT_PUBLIC_SITE_URL);
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
         return app.getRequestHandler()(req, res)
     })
 
     const io = socketIO(server, {
         cors: {
-            origin: "*",
-            methods: ["GET", "POST"]
+            origin: process.env.NEXT_PUBLIC_SITE_URL,
         }
     })
 
