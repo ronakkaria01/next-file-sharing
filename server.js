@@ -14,7 +14,12 @@ app.prepare().then(() => {
         return app.getRequestHandler()(req, res)
     })
 
-    const io = socketIO(server)
+    const io = socketIO(server, {
+        cors: {
+            origin: "*",
+            methods: ["GET", "POST"]
+        }
+    })
 
     handler(io)
 
