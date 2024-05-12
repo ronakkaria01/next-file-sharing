@@ -1,7 +1,10 @@
 "use client"
 
 import { io } from "socket.io-client"
-const socket = io(process.env.NEXT_PUBLIC_SITE_URL)
+const socket = io(process.env.NEXT_PUBLIC_SITE_URL, {
+    transports: ['websocket'],
+    rejectUnauthorized: false
+})
 
 const connectPromise = new Promise((resolve, reject) => {
     socket.on('connect', () => {
