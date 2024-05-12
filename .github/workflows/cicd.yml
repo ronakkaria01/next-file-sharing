@@ -18,24 +18,17 @@ jobs:
         echo "NEXT_PUBLIC_PORT=${{ secrets.NEXT_PUBLIC_PORT }}" >> .env
         echo "NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }}" >> .env
         echo "NEXT_PUBLIC_DOCKER_IP=${{ secrets.NEXT_PUBLIC_DOCKER_IP }}" >> .env
-    - name: Login Dockerhub
-      env:
-            DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
-            DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-      run: echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
     - name: List Files
       run: ls -la
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile -t ronakkaria01/next-file-sharing-cicd
-    - name: Push to Dockerhub
-      run: docker push ronakkaria01/next-file-sharing-cicd:latest
+    - name: Build and run with docker compose
+      run: docker-compose up -d
+    - name: Check docker compose
+      run: docker ps
 
   deploy:
     runs-on: self-hosted
     needs: build
     steps:
-    - name: Pull Docker image
-      run: sudo docker pull ronakkaria01/next-file-sharing-cicd:latest
     - name: Delete Old docker container
       run: sudo docker rm -f next-file-sharing-cicd-pipeline-container || true
     - name: Prune Docker
