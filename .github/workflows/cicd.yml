@@ -26,7 +26,7 @@ jobs:
     - name: List Files
       run: ls -la
     - name: Build the Docker image
-      run: docker build . --file Dockerfile -t ronakkaria01/next-file-sharing-cicd
+      run: sudo docker build . --file Dockerfile -t ronakkaria01/next-file-sharing-cicd
     - name: Check docker compose
       run: sudo docker ps
     - name: Push to Dockerhub
