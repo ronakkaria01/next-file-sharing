@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { socket } from "./socket.io/connection"
 
-export const Users = ({ passSocketId }) => {
+export const Users = ({ passTargetUsername }) => {
 
     const [users, setUsers] = useState([])
 
@@ -22,7 +22,7 @@ export const Users = ({ passSocketId }) => {
                 {users && (
                     <ul>
                         {users.map((user, index) => (
-                            <li key={index} onClick={() => passSocketId(user.socketId)}>
+                            <li key={index} onClick={() => passTargetUsername(user.username)}>
                                 {user.username}
                             </li>
                         ))}

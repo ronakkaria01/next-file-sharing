@@ -1,7 +1,7 @@
 import { useRef } from "react"
 import { socket } from "./socket.io/connection"
 
-export const SendOffer = ({ socketId, pc }) => {
+export const SendOffer = ({ username, pc }) => {
     const targetSocketRef = useRef("")
 
     const sendOffer = async () => {
@@ -14,7 +14,7 @@ export const SendOffer = ({ socketId, pc }) => {
 
     return (
         <>
-            <input type="text" placeholder="Enter target socket ID" ref={targetSocketRef} defaultValue={socketId} />
+            <input type="text" placeholder="Enter target username" ref={targetSocketRef} defaultValue={username} />
             <button onClick={sendOffer}>Send Offer</button>
         </>
     )

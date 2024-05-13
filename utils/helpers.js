@@ -7,12 +7,17 @@ const addUser = (username) => {
     })
 }
 
-const getUsers = () => {
-    return data.users
+const getUsers = (socket) => {
+    return data.users.filter(user => user.socketId !== socket.id)
 }
 
 const getUserByUsername = (username) => {
     return data.users.find(user => user.username === username)
+}
+
+const getSocketIdByUsername = (username) => {
+    const user = data.users.find(user => user.username === username)
+    return user.socketId
 }
 
 const getUserBySocketId = (id) => {
@@ -26,4 +31,4 @@ const removeUserBySocketId = (id) => {
     })
 }
 
-module.exports = { addUser, getUsers, getUserByUsername, getUserBySocketId, removeUserBySocketId }
+module.exports = { addUser, getUsers, getUserByUsername, getUserBySocketId, removeUserBySocketId, getSocketIdByUsername }

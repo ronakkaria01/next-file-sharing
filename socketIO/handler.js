@@ -1,4 +1,4 @@
-const { addUser, getUsers, removeUserBySocketId } = require('../utils/helpers')
+const { addUser, getUsers, removeUserBySocketId, getUserByUsername, getSocketIdByUsername } = require('../utils/helpers')
 
 function handler(io) {
     io.on('connection', (socket) => {
@@ -8,8 +8,11 @@ function handler(io) {
             console.error('Socket connection error:', error)
         })
 
-        socket.on('offer', (offer, targetSocketId) => {
-            io.to(targetSocketId).emit('offer', offer, socket.id)
+        socket.on('offer', (offer, targetUsername) => {
+            const targetSocketId = getSocketIdByUsername(targetUsername)
+            if (targetSocketId !== socket.id) { // Can't send offer to self
+                io.to(targetSocketId).emit('offer', offer, socket.id)
+            }
         })
 
         socket.on('answer', (answer, targetSocketId) => {
@@ -24,7 +27,7 @@ function handler(io) {
             console.log('User disconnected')
 
             await removeUserBySocketId(socket.id)
-            socket.emit('users', getUsers())
+            socket.emit('users', getUsers(socket))
         })
 
         socket.on('customEvent', (data) => {
@@ -40,7 +43,7 @@ function handler(io) {
         })
 
         socket.on('get-users', () => {
-            socket.emit('users', getUsers())
+            socket.emit('users', getUsers(socket))
         })
     })
 }

@@ -11,21 +11,24 @@ import { Users } from "./Users"
 
 const Main = () => {
     const [pc, setPc] = useState(null)
-    const [dataChannel, setDataChannel] = useState(null)
+    const [fileTransferChannel, setFileTransferChannel] = useState(null)
+    const [messageChannel, setMessageChannel] = useState(null)
     const [connected, setConnected] = useState(false)
     const { username } = useContext(UsernameContext)
-    const [socketId, setSocketId] = useState('') // Meant to add to the target socket id field
+    const [targetUsername, setTargetUsername] = useState('') // Meant to add to the target socket id field
 
     useEffect(() => {
         // Create a peer connection
         const peerConnection = new RTCPeerConnection()
 
         // Create a data channel
-        const channel = peerConnection.createDataChannel('file-transfer')
+        const fileTransfer = peerConnection.createDataChannel('file-transfer')
+        const message = peerConnection.createDataChannel('message')
 
         // Set the peer connection and data channel in state
         setPc(peerConnection)
-        setDataChannel(registerChannel(channel))
+        setFileTransferChannel(registerFileTransferChannel(fileTransfer))
+        setMessageChannel(registerMessageChannel(message))
 
         // Clean up function
         return () => {
@@ -41,7 +44,11 @@ const Main = () => {
 
             peerConnection.ondatachannel = (event) => {
                 const channel = event.channel
-                setDataChannel(registerChannel(channel))
+                if (channel.label === 'file-transfer') {
+                    setFileTransferChannel(registerFileTransferChannel(channel))
+                } else if (channel.label === 'message') {
+                    setMessageChannel(registerMessageChannel(channel))
+                }
             }
             peerConnection.onicecandidate = (event) => {
                 if (event.candidate) {
@@ -80,7 +87,15 @@ const Main = () => {
         }
     }, [pc])
 
-    const registerChannel = (channel) => {
+    const registerMessageChannel = (channel) => {
+        channel.onmessage = (event) => {
+            console.log(event)
+        }
+
+        return channel
+    }
+
+    const registerFileTransferChannel = (channel) => {
         // Handle incoming data channel messages
         var receivedChunks = []
         var totalReceivedSize = 0
@@ -124,31 +139,27 @@ const Main = () => {
         URL.revokeObjectURL(url)
     }
 
-    const passSocketId = (id) => {
-        setSocketId(id)
+    const passTargetUsername = (name) => {
+        setTargetUsername(name)
     }
 
     return (
         <main>
             <div>
-                {socket.id ?
-                    (<p>Your Socket ID {socket.id}</p>)
-                    : ''
-                }
                 {username == '' ? (
                     <Username />
                 ) : (
                     <>
                         {!connected ? (
-                            <SendOffer socketId={socketId} pc={pc} />
+                            <SendOffer username={targetUsername} pc={pc} />
                         ) : (
                             <>
-                                <SendFile dataChannel={dataChannel} pc={pc} />
+                                <SendFile dataChannel={fileTransferChannel} pc={pc} />
                             </>
                         )}
-                        <Debug pc={pc} dataChannel={dataChannel} />
+                        <Debug pc={pc} dataChannel={messageChannel} />
 
-                        <Users passSocketId={passSocketId} />
+                        <Users passTargetUsername={passTargetUsername} />
                     </>
                 )}
             </div>

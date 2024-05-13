@@ -1,6 +1,6 @@
-export const Debug = () => {
+export const Debug = ({ pc, dataChannel }) => {
 
-    const checkStatus = async ({ pc, dataChannel }) => {
+    const checkStatus = async () => {
         if (!pc) return
 
         console.log(dataChannel)
