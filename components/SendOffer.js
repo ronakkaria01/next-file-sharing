@@ -1,14 +1,14 @@
 import { useRef } from "react"
 import { socket } from "./socket.io/connection"
 
-export const SendOffer = ({ username, pc }) => {
+export const SendOffer = ({ username, peerConnection }) => {
     const targetSocketRef = useRef("")
 
     const sendOffer = async () => {
         if (!targetSocketRef.current.value) return
-        if (!pc) return
-        const offer = await pc.createOffer()
-        await pc.setLocalDescription(offer)
+        if (!peerConnection) return
+        const offer = await peerConnection.createOffer()
+        await peerConnection.setLocalDescription(offer)
         socket.emit('offer', offer, targetSocketRef.current.value)
     }
 

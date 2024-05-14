@@ -1,18 +1,18 @@
-export const Debug = ({ pc, dataChannel }) => {
+export const Debug = ({ peerConnection, dataChannel }) => {
 
     const checkStatus = async () => {
-        if (!pc) return
+        if (!peerConnection) return
 
         console.log(dataChannel)
-        console.log(pc)
+        console.log(peerConnection)
 
-        pc.onconnectionstatechange = (event) => {
-            console.log('Connection state changed:', pc.connectionState)
+        peerConnection.onconnectionstatechange = (event) => {
+            console.log('Connection state changed:', peerConnection.connectionState)
         }
     }
 
     const sendHi = async () => {
-        if (!pc) return
+        if (!peerConnection) return
         if (!dataChannel) return
 
         dataChannel.send("Hi Peer")

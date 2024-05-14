@@ -9,7 +9,6 @@ export const Username = () => {
 
     const submitUsername = () => {
         const username = usernameRef.current.value
-        console.log(username)
 
         if (username != '') {
             socket.emit('add-username', username)

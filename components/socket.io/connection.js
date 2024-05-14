@@ -25,7 +25,7 @@ const connectPromise = new Promise((resolve, reject) => {
 
 connectPromise.then(() => {
     socket.on('users', (users) => {
-        console.log(users)
+        // console.log(users)
     })
 })
 

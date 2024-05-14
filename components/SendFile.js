@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-export const SendFile = ({ pc, dataChannel }) => {
+export const SendFile = ({ peerConnection, dataChannel }) => {
     const [file, setFile] = useState(null)
 
     const handleFileChange = (event) => {
@@ -8,7 +8,7 @@ export const SendFile = ({ pc, dataChannel }) => {
     }
 
     const handleSendFile = async () => {
-        if (!pc) return
+        if (!peerConnection) return
         const reader = new FileReader()
 
         reader.onload = async () => {

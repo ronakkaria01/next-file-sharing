@@ -10,82 +10,87 @@ import { Username } from "./Username"
 import { Users } from "./Users"
 
 const Main = () => {
-    const [pc, setPc] = useState(null)
+    const [peerConnection, setPeerConnection] = useState(null)
     const [fileTransferChannel, setFileTransferChannel] = useState(null)
     const [messageChannel, setMessageChannel] = useState(null)
     const [connected, setConnected] = useState(false)
     const { username } = useContext(UsernameContext)
     const [targetUsername, setTargetUsername] = useState('') // Meant to add to the target socket id field
 
+    const servers = {
+        iceServers: [
+            {
+                urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
+            },
+        ],
+        iceCandidatePoolSize: 10,
+    }
+
     useEffect(() => {
         // Create a peer connection
-        const peerConnection = new RTCPeerConnection()
+        const peerConnection = new RTCPeerConnection(servers)
 
         // Create a data channel
         const fileTransfer = peerConnection.createDataChannel('file-transfer')
         const message = peerConnection.createDataChannel('message')
 
-        // Set the peer connection and data channel in state
-        setPc(peerConnection)
         setFileTransferChannel(registerFileTransferChannel(fileTransfer))
         setMessageChannel(registerMessageChannel(message))
 
-        // Clean up function
-        return () => {
-            // Close peer connection when component unmounts
-            peerConnection.close()
+        peerConnection.onconnectionstatechange = (event) => {
+            console.log('Connection state changed:', peerConnection.connectionState)
+            if (peerConnection.connectionState === 'connected') {
+                setConnected(true) // Set connected state to true when connection is established
+            }
         }
-    }, [])
 
-    useEffect(() => {
+        peerConnection.ondatachannel = (event) => {
+            const channel = event.channel
+            if (channel.label === 'file-transfer') {
+                setFileTransferChannel(registerFileTransferChannel(channel))
+            } else if (channel.label === 'message') {
+                setMessageChannel(registerMessageChannel(channel))
+            }
+        }
+
         // Set up WebRTC signaling
         socket.on('offer', async (offer, senderSocketId) => {
-            const peerConnection = new RTCPeerConnection()
-
-            peerConnection.ondatachannel = (event) => {
-                const channel = event.channel
-                if (channel.label === 'file-transfer') {
-                    setFileTransferChannel(registerFileTransferChannel(channel))
-                } else if (channel.label === 'message') {
-                    setMessageChannel(registerMessageChannel(channel))
-                }
-            }
             peerConnection.onicecandidate = (event) => {
                 if (event.candidate) {
                     socket.emit('iceCandidate', event.candidate, senderSocketId)
                 }
             }
-            peerConnection.onconnectionstatechange = (event) => {
-                console.log('Connection state changed:', peerConnection.connectionState)
-                if (peerConnection.connectionState === 'connected') {
-                    setConnected(true) // Set connected state to true when connection is established
-                }
-            }
-            await peerConnection.setRemoteDescription(offer)
+
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
             const answer = await peerConnection.createAnswer()
             await peerConnection.setLocalDescription(answer)
             socket.emit('answer', answer, senderSocketId)
         })
 
         socket.on('answer', async (answer) => {
-            if (!pc) return
-            await pc.setRemoteDescription(answer)
+            if (!peerConnection) return
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
             setConnected(true)
         })
 
         socket.on('iceCandidate', async (candidate) => {
-            if (!pc) return
-            await pc.addIceCandidate(candidate)
+            if (!peerConnection) return
+            await peerConnection.addIceCandidate(candidate)
         })
+
+        setPeerConnection(peerConnection)
 
         // Clean up function
         return () => {
+            // Close peer connection when component unmounts
+            peerConnection.close()
+
             // Remove WebRTC signaling listeners when component unmounts
             socket.off('offer')
             socket.off('answer')
             socket.off('iceCandidate')
         }
-    }, [pc])
+    }, [])
 
     const registerMessageChannel = (channel) => {
         channel.onmessage = (event) => {
@@ -151,13 +156,13 @@ const Main = () => {
                 ) : (
                     <>
                         {!connected ? (
-                            <SendOffer username={targetUsername} pc={pc} />
+                            <SendOffer username={targetUsername} peerConnection={peerConnection} />
                         ) : (
                             <>
-                                <SendFile dataChannel={fileTransferChannel} pc={pc} />
+                                <SendFile dataChannel={fileTransferChannel} peerConnection={peerConnection} />
                             </>
                         )}
-                        <Debug pc={pc} dataChannel={messageChannel} />
+                        <Debug peerConnection={peerConnection} dataChannel={messageChannel} />
 
                         <Users passTargetUsername={passTargetUsername} />
                     </>
